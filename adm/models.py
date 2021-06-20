@@ -172,6 +172,11 @@ class Abode(models.Model):
             self.Reservation.room.save()
             self.Reservation.save()
             super().save(self)
+        if self.status == 'Concluida':
+            self.Reservation.room.status = 'Livre'
+            self.Reservation.status = 'Concluida'
+            self.Reservation.room.save()
+            self.Reservation.save()
 
     def __str__(self):
         return "Reserva: " + self.Reservation.customer.name + " / Quarto: %s" %self.Reservation.room.number
