@@ -105,26 +105,26 @@ class Customer(models.Model):
     def save(self):
 
         group = Group.objects.get(name='Cliente')
+        if(self.pk is None):
+            if self.email is not None:
+                self.user = User.objects.create_user(self.name, self.email, '123.%s' %self.birth_date)
+                self.user.first_name = self.name
+                self.user.email = self.email
+                self.user.password = User.objects.make_random_password()
+                group.user_set.add(self.user)
+                self.user.save()
 
-        if self.email is not None:
-            self.user = User.objects.create_user(self.name, self.email, '123.%s' %self.birth_date)
-            self.user.first_name = self.name
-            self.user.email = self.email
-            self.user.password = User.objects.make_random_password()
-            group.user_set.add(self.user)
-            self.user.save()
-
-            send_mail(
-                'olá '+ self.name + ' Bem vindo ao linxiHotels',
-                'Sua senha foi gerada aleatoriamente para: ' + self.user.password,
-                EMAIL_HOST_USER,
-                [self.email],
-                fail_silently=False,
-            )
-        else:
-           self.user = User.objects.create_user(self.name, 'n/a', '123.%s' %self.birth_date)
-           group.user_set.add(self.user)
-           self.user.save()
+                send_mail(
+                    'olá '+ self.name + ' Bem vindo ao linxiHotels',
+                    'Sua senha foi gerada aleatoriamente para: ' + self.user.password,
+                    EMAIL_HOST_USER,
+                    [self.email],
+                    fail_silently=False,
+                )
+            else:
+                self.user = User.objects.create_user(self.name, 'n/a', '123.%s' %self.birth_date)
+                group.user_set.add(self.user)
+                self.user.save()
         
         if self.user != '':
             super().save()
