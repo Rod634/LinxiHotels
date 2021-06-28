@@ -144,10 +144,14 @@ class Reservation(models.Model):
     card_code = models.IntegerField()
     status = models.CharField(max_length=20, choices=RESERVATION_STATUS)
 
+
     def save(self):
         if self.room.capacity >= self.people_count and self.room.status == 'Livre':
-            super().save()
+            if self.status == 'Anulada':
+                self.room.status = 'Livre'
+                self.room.save()
 
+            super().save()
 
     def __str__(self):
         return "Cliente: " + self.customer.name + " / Empresa: " + self.company.name
@@ -171,12 +175,13 @@ class Abode(models.Model):
             self.Reservation.room.status = 'Ocupado'
             self.Reservation.room.save()
             self.Reservation.save()
-            super().save(self)
+            super().save()
         if self.status == 'Concluida':
             self.Reservation.room.status = 'Livre'
             self.Reservation.status = 'Concluida'
             self.Reservation.room.save()
             self.Reservation.save()
-
+            super().save()
+        
     def __str__(self):
         return "Reserva: " + self.Reservation.customer.name + " / Quarto: %s" %self.Reservation.room.number
