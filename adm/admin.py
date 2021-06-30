@@ -2,4 +2,4 @@ from django.contrib import admin
 from .models import *
 # Register your models here.
 
-admin.site.register({Company, Service, serviceCompany, Room, Employee, Customer, Reservation, ReservationService, Abode})
+admin.site.register({Company, Service, Room, Employee, Customer, Reservation,  Abode})

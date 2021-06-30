@@ -34,6 +34,7 @@ class Company(models.Model):
     contactNumber = models.IntegerField()
     category = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
+    image_url = models.CharField(max_length=1000, blank=True, null=True, default=None)
 
     def __str__(self):
         return self.name
@@ -44,6 +45,8 @@ class Service(models.Model):
     peopleCount = models.IntegerField()
     period = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
+    company = models.ManyToManyField(Company)
+    image_url = models.CharField(max_length=1000, blank=True, null=True, default=None)
 
     def __str__(self):
         if self.peopleCount == 1:
@@ -51,19 +54,13 @@ class Service(models.Model):
         else:
             return self.name + ' - ' + self.period + ' - %s pessoas' %self.peopleCount
 
-class serviceCompany(models.Model):
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    Company = models.ForeignKey(Company, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return " / Empresa: " + self.Company.name + "Serviço: " + self.service.name
-
 class Room(models.Model):
     number = models.IntegerField()
     capacity = models.IntegerField()
     category = models.CharField(max_length=50)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=ROOM_STATUS, default='Livre')
+    image_url = models.CharField(max_length=1000, blank=True, null=True, default=None)
 
     def __str__(self):
         return self.company.name + ' - Quarto: %s' %self.number 
@@ -74,6 +71,7 @@ class Employee(models.Model):
     name = models.CharField(max_length=200)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=EMPLOYEE_ROLES, default='Recepcionista')
+    image_url = models.CharField(max_length=1000, blank=True, null=True, default=None)
 
     def save(self):
         if self.role == 'Recepcionista':
@@ -101,6 +99,7 @@ class Customer(models.Model):
     issue_id = models.DateField(blank=True, null=True)
     passport = models.IntegerField(blank=True, null=True)
     email = models.CharField(max_length=200, blank=True, null=True, default=None)
+    image_url = models.CharField(max_length=1000, blank=True, null=True, default=None)
 
     def save(self):
 
@@ -136,14 +135,13 @@ class Reservation(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     company =  models.ForeignKey(Company, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    service = models.ManyToManyField(Service)
     people_count = models.IntegerField()
     ocupation_date = models.DateField()
     leave_date = models.DateField()
     card_number = models.IntegerField()
     card_code = models.IntegerField()
     status = models.CharField(max_length=20, choices=RESERVATION_STATUS)
-
 
     def save(self):
         if self.room.capacity >= self.people_count and self.room.status == 'Livre':
@@ -156,13 +154,6 @@ class Reservation(models.Model):
     def __str__(self):
         return "Cliente: " + self.customer.name + " / Empresa: " + self.company.name
     
-class ReservationService(models.Model):
-    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "Reserva: " + self.reservation + " / Serviço: " + self.service
-
 class Abode(models.Model):
     Reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     chek_in = models.DateField()
