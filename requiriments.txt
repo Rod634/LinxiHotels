@@ -1,5 +1,6 @@
 Django~=2.2.4
 djangorestframework
+djangorestframework_simplejwt
 markdown
 django-filter
 django-cors-headers
