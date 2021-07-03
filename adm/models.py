@@ -101,7 +101,7 @@ class Customer(models.Model):
     email = models.CharField(max_length=200, blank=True, null=True, default=None)
     image_url = models.CharField(max_length=1000, blank=True, null=True, default=None)
 
-    def save(self):
+    def save(self, *args, **kwargs):
 
         group = Group.objects.get(name='Cliente')
         if(self.pk is None):
@@ -126,7 +126,7 @@ class Customer(models.Model):
                 self.user.save()
         
         if self.user != '':
-            super().save()
+            super(Customer, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name

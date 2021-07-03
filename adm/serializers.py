@@ -3,6 +3,11 @@ from rest_framework import serializers
 from .models import *
 from django.contrib.auth.models import User
 
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta: 
+        model = User
+        fields = ['pk', 'username']
+
 class CompanySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Company
@@ -21,9 +26,18 @@ class RoomSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['pk', 'number', 'capacity', 'category', 'company', 'status']
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
+
+    user = UserSerializer(many=False)
+
     class Meta:
         model = Customer
-        fields = ['pk', 'name', 'nationality', 'birth_date', 'address', 'contact_number', 'number_id', 'issue_id', 'passport', 'email']
+        fields = ['pk', 'user', 'name', 'nationality', 'birth_date', 'address', 'contact_number', 'number_id', 'issue_id', 'passport', 'email']
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        customer = Customer.objects.create(**validated_data)
+        User.objects.create(customer=customer, **user_data)
+        return customer
 
 class ReservationSerializer(serializers.HyperlinkedModelSerializer):
     customer = CustomerSerializer(many=False)

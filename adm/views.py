@@ -4,8 +4,10 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from .serializers import *
 from .models import *
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
-  
+
+
 #Company
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
@@ -22,9 +24,9 @@ class RoomViewSet(viewsets.ModelViewSet):
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [permissions.IsAuthenticated]
 #Reservation
 class ReservationViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     permission_classes = [permissions.IsAuthenticated]
