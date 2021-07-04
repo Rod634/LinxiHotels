@@ -5,6 +5,7 @@ from rest_framework import permissions
 from .serializers import *
 from .models import *
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import query
 # Create your views here.
 
 
@@ -20,6 +21,11 @@ class ServiceViewSet(viewsets.ModelViewSet):
 class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
+    def get_queryset(self):
+        roomid = self.request.query_params.get('room')
+        if roomid is not None:
+            self.queryset = models.Room.objects.filter(room=roomid)
+        return self.queryset
 #Customer
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
