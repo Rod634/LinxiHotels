@@ -25,7 +25,7 @@ class RoomSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Room
-        fields = ['pk', 'number', 'capacity', 'category', 'company', 'status']
+        fields = ['pk', 'number', 'capacity', 'category', 'company', 'status', 'image_url']
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
 
