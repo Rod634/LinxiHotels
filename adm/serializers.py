@@ -3,52 +3,47 @@ from rest_framework import serializers
 from .models import *
 from django.contrib.auth.models import User
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta: 
         model = User
         fields = ['pk', 'username']
 
-class CompanySerializer(serializers.HyperlinkedModelSerializer):
+class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ['pk', 'name', 'adress', 'contactNumber', 'category', 'email']
+        fields = '__all__'
 
-class ServiceSerializer(serializers.HyperlinkedModelSerializer):
+class ServiceSerializer(serializers.ModelSerializer):
     company = CompanySerializer(many=True)
     
     class Meta:
         model = Service
-        fields = ['pk', 'name', 'price', 'peopleCount', 'period', 'description', 'company']
+        fields = '__all__'
 
-class RoomSerializer(serializers.HyperlinkedModelSerializer):
+class RoomSerializer(serializers.ModelSerializer):
     company = CompanySerializer(many=False)
 
     class Meta:
         model = Room
-        fields = ['pk', 'number', 'capacity', 'category', 'company', 'status', 'image_url']
+        fields = '__all__'
 
-class CustomerSerializer(serializers.HyperlinkedModelSerializer):
+class CustomerSerializer(serializers.ModelSerializer):
 
-    user = UserSerializer(many=False)
+    # user = UserSerializer(many=False)
 
     class Meta:
         model = Customer
-        fields = ['pk', 'user', 'name', 'nationality', 'birth_date', 'address', 'contact_number', 'number_id', 'issue_id', 'passport', 'email']
+        fields = '__all__'
 
-    def create(self, validated_data):
-        user_data = validated_data.pop('user')
-        customer = Customer.objects.create(**validated_data)
-        User.objects.create(customer=customer, **user_data)
-        return customer
+    # def create(self, validated_data):
+    #     user_data = validated_data.pop('user')
+    #     customer = Customer.objects.create(**validated_data)
+    #     User.objects.create(customer=customer, **user_data)
+    #     return customer
 
-class ReservationSerializer(serializers.HyperlinkedModelSerializer):
-    customer = CustomerSerializer(many=False)
-    company = CompanySerializer(many=False)
-    room = RoomSerializer(many=False)
-    service = ServiceSerializer(many=True)
-
+class ReservationSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Reservation
-        fields = ['pk', 'customer', 'company', 'room', 'service', 'people_count', 'ocupation_date', 'leave_date', 'card_number', 'card_code']
-
+        fields = '__all__'
 

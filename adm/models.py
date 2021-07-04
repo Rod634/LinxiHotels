@@ -106,16 +106,16 @@ class Customer(models.Model):
         group = Group.objects.get(name='Cliente')
         if(self.pk is None):
             if self.email is not None:
-                self.user = User.objects.create_user(self.name, self.email, '123.%s' %self.birth_date)
+                passwd = User.objects.make_random_password();
+                self.user = User.objects.create_user(self.name, self.email, passwd)
                 self.user.first_name = self.name
                 self.user.email = self.email
-                self.user.password = User.objects.make_random_password()
                 group.user_set.add(self.user)
                 self.user.save()
 
                 send_mail(
                     'olá '+ self.name + ' Bem vindo ao linxiHotels',
-                    'Sua senha foi gerada aleatoriamente para: ' + self.user.password,
+                    'Sua senha foi gerada aleatoriamente para: ' + passwd,
                     EMAIL_HOST_USER,
                     [self.email],
                     fail_silently=False,
@@ -143,13 +143,13 @@ class Reservation(models.Model):
     card_code = models.IntegerField()
     status = models.CharField(max_length=20, choices=RESERVATION_STATUS)
 
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.room.capacity >= self.people_count and self.room.status == 'Livre':
             if self.status == 'Anulada':
                 self.room.status = 'Livre'
                 self.room.save()
 
-            super().save()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return "Cliente: " + self.customer.name + " / Empresa: " + self.company.name

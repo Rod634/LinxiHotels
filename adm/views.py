@@ -8,7 +8,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import query
 # Create your views here.
 
-
 #Company
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
@@ -32,6 +31,5 @@ class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
 #Reservation
 class ReservationViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
